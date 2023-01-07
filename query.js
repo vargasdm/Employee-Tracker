@@ -3,6 +3,17 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const cTable = require('console.table');
 
+console.table([
+    {
+      name: 'foo',
+      age: 10
+    }, {
+
+      name: 'bar',
+      age: 20
+    }
+  ]);
+
 // Connect to database probably need to use this for functions that edit certain dadabases
 const db = mysql.createConnection(
     {
@@ -17,7 +28,7 @@ const db = mysql.createConnection(
 );
 
 function showDepartments() {
-    const departments = db.query('SELECT * FROM departments', function (err, results) {
+    const departments = db.query('SELECT * FROM department', function (err, results) {
         console.log(results);
     });
     console.table(departments);
@@ -25,4 +36,4 @@ function showDepartments() {
 
 showDepartments();
 
-module.exports = showDepartments;
+module.exports = {showDepartments};

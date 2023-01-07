@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const fs = require('fs');
-require("console.table");
+const cTable = require('console.table');
 const query = require('./query.js');
 const { showDepartments } = require('./query.js');
 
