@@ -2,17 +2,8 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const fs = require('fs');
 const cTable = require('console.table');
-
-console.table([
-    {
-      name: 'foo',
-      age: 10
-    }, {
-
-      name: 'bar',
-      age: 20
-    }
-  ]);
+// const index = require('./index.js');
+// const { mainMenu } = require('./index.js');
 
 // Connect to database probably need to use this for functions that edit certain dadabases
 const db = mysql.createConnection(
@@ -28,12 +19,16 @@ const db = mysql.createConnection(
 );
 
 function showDepartments() {
-    const departments = db.query('SELECT * FROM department', function (err, results) {
-        console.log(results);
+    db.query('SELECT * FROM department', function (err, results) {
+        console.table(results);
     });
-    console.table(departments);
+    return;
 }
 
-showDepartments();
+function showRoles() {
+    db.query('SELECT * FROM role', function (err, results) {
+        console.table(results);
+    });
+}
 
-module.exports = {showDepartments};
+module.exports = { showDepartments, showRoles };

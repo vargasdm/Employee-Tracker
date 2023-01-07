@@ -3,24 +3,13 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const cTable = require('console.table');
 const query = require('./query.js');
-const { showDepartments } = require('./query.js');
-
-// test to see if console.table works
-console.table([
-    {
-      name: 'foo',
-      age: 10
-    }, {
-
-      name: 'bar',
-      age: 20
-    }
-  ]);
+const { showDepartments, showRoles } = require('./query.js');
 
 
 console.log('Welcome to your Employee Manager!!')
 
-inquirer
+function mainMenu() {
+    inquirer
         .prompt([
             {
                 type: 'list',
@@ -41,18 +30,23 @@ inquirer
             if (answers.options === 'View all departments') {
                 showDepartments();
             } else if (answers.options === 'View all roles') {
-                // internPrompts();
+                showRoles();
             } else if (answers.options === 'View all employees') {
                 // internPrompts();
-            }else if (answers.options === 'Add a department') {
+            } else if (answers.options === 'Add a department') {
                 // internPrompts();
-            }else if (answers.options === 'Add a role') {
+            } else if (answers.options === 'Add a role') {
                 // internPrompts();
-            }else if (answers.options === 'Add an employee') {
+            } else if (answers.options === 'Add an employee') {
                 // internPrompts();
-            }else if (answers.options === 'Update and employee role') {
+            } else if (answers.options === 'Update and employee role') {
                 // internPrompts();
-            }else {
+            } else {
                 return
             }
         })
+};
+
+mainMenu();
+
+// module.exports = { mainMenu };
