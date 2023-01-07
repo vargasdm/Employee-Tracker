@@ -17,7 +17,10 @@ const db = mysql.createConnection(
 );
 
 function showDepartments() {
-    console.log(department);
+    const departments = db.query('SELECT * FROM departments', function (err, results) {
+        console.log(results);
+    });
+    console.table(departments);
 }
 
 showDepartments();

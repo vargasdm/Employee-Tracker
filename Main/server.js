@@ -16,6 +16,7 @@ const { showDepartments } = query
 //     }
 //   ]);
 
+
 console.log('Welcome to your Employee Manager!!')
 
 inquirer
@@ -37,7 +38,7 @@ inquirer
         ])
         .then((answers) => {
             if (answers.options === 'View all departments') {
-                showDepartments();
+                // showDepartments();
             } else if (answers.options === 'View all roles') {
                 // internPrompts();
             } else if (answers.options === 'View all employees') {
