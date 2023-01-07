@@ -1,9 +1,9 @@
-const mysql = require('mysql2');
-const inquirer = require('inquirer');
-const fs = require('fs');
-const cTable = require('console.table');
-const query = require('./query.js');
-const { showDepartments, showRoles } = require('./query.js');
+const mysql = require("mysql2");
+const inquirer = require("inquirer");
+const fs = require("fs");
+const cTable = require("console.table");
+const db = require("./config/connection.js");
+// const { showDepartments, showRoles } = require("./config/query.js");
 
 
 console.log('Welcome to your Employee Manager!!')
@@ -28,11 +28,11 @@ function mainMenu() {
         ])
         .then((answers) => {
             if (answers.options === 'View all departments') {
-                showDepartments();
+                getDepartments();
             } else if (answers.options === 'View all roles') {
-                showRoles();
+                getRoles();
             } else if (answers.options === 'View all employees') {
-                // internPrompts();
+                getEmployees();
             } else if (answers.options === 'Add a department') {
                 // internPrompts();
             } else if (answers.options === 'Add a role') {
@@ -41,7 +41,7 @@ function mainMenu() {
                 // internPrompts();
             } else if (answers.options === 'Update and employee role') {
                 // internPrompts();
-            } else {
+            } else if (answers.options === 'Quit'){
                 return
             }
         })
@@ -49,4 +49,27 @@ function mainMenu() {
 
 mainMenu();
 
-// module.exports = { mainMenu };
+// sql queries
+function getDepartments() {
+    db.query('SELECT * FROM department', function (err, results) {
+        console.table(results);
+        mainMenu();
+    }
+    )
+}
+
+function getRoles() {
+    db.query('SELECT * FROM role', function (err, results) {
+        console.table(results);
+        mainMenu();
+    }
+    )
+}
+
+function getEmployees() {
+    db.query('SELECT * FROM employee', function (err, results) {
+        console.table(results);
+        mainMenu();
+    }
+    )
+}
