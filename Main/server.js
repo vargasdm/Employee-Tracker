@@ -1,20 +1,21 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const fs = require('fs');
-const cTable = require('console.table');
+require("console.table");
 const query = require('./query.js');
-const { showDepartments } = query
+const { showDepartments } = require('./query.js');
 
 // test to see if console.table works
-// console.table([
-//     {
-//       name: 'foo',
-//       age: 10
-//     }, {
-//       name: 'bar',
-//       age: 20
-//     }
-//   ]);
+console.table([
+    {
+      name: 'foo',
+      age: 10
+    }, {
+
+      name: 'bar',
+      age: 20
+    }
+  ]);
 
 
 console.log('Welcome to your Employee Manager!!')
@@ -38,7 +39,7 @@ inquirer
         ])
         .then((answers) => {
             if (answers.options === 'View all departments') {
-                // showDepartments();
+                showDepartments();
             } else if (answers.options === 'View all roles') {
                 // internPrompts();
             } else if (answers.options === 'View all employees') {
