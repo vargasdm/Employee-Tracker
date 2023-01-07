@@ -34,15 +34,15 @@ function mainMenu() {
             } else if (answers.options === 'View all employees') {
                 getEmployees();
             } else if (answers.options === 'Add a department') {
-                // internPrompts();
+                addDepartment();
             } else if (answers.options === 'Add a role') {
                 // internPrompts();
             } else if (answers.options === 'Add an employee') {
                 // internPrompts();
             } else if (answers.options === 'Update and employee role') {
                 // internPrompts();
-            } else if (answers.options === 'Quit'){
-                return
+            } else {
+                return;
             }
         })
 };
@@ -72,4 +72,25 @@ function getEmployees() {
         mainMenu();
     }
     )
+}
+
+function addDepartment() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of the department?',
+                name: 'department',
+            }
+        ])
+        .then((answers) => {
+            let newDepartment = answers;
+            console.log(newDepartment);
+            db.query('INSERT INTO department (name) VALUES (?)', newDepartment, function (err, results) {
+                console.table(results);
+                mainMenu();
+            }
+            )
+        }
+        )
 }
