@@ -3,8 +3,7 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require("console.table");
 const db = require("./config/connection.js");
-// const { showDepartments, showRoles } = require("./config/query.js");
-
+let departmentList = "";
 
 console.log('Welcome to your Employee Manager!!')
 
@@ -86,7 +85,8 @@ function addDepartment() {
         .then((answers) => {
             let newDepartment = answers;
             console.log(newDepartment);
-            db.query('INSERT INTO department (name) VALUES (?)', newDepartment, function (err, results) {
+            const { department } = newDepartment;
+            db.query('INSERT INTO department (name) VALUES (?)', department, function (err, results) {
                 console.table(results);
                 mainMenu();
             }
@@ -94,3 +94,58 @@ function addDepartment() {
         }
         )
 }
+
+function addRole() {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of the role?',
+                name: 'roleName',
+            },
+            {
+                type: 'input',
+                message: 'What is the salary of this role?',
+                name: 'salary',
+            },
+            {
+                type: 'list',
+                message: 'What department does this role belong to?',
+                name: 'roleDepartment',
+                choices: [],
+            }
+        ])
+        .then((answers) => {
+            let newRole = answers;
+            console.log(newRole);
+            const { roleName, salary, roelDepartment } = newRole;
+            db.query('INSERT INTO role (title, salary, department_id) VALUES (?)', [roleName, salary, roelDepartment], function (err, results) {
+                console.table(results);
+                mainMenu();
+            }
+            )
+        }
+        )
+}
+
+// function addEmployee() {
+//     inquirer
+//         .prompt([
+//             {
+//                 type: 'input',
+//                 message: 'What is the name of the department?',
+//                 name: 'department',
+//             }
+//         ])
+//         .then((answers) => {
+//             let newDepartment = answers;
+//             console.log(newDepartment);
+//             const { department } = newDepartment;
+//             db.query('INSERT INTO department (name) VALUES (?)', department, function (err, results) {
+//                 console.table(results);
+//                 mainMenu();
+//             }
+//             )
+//         }
+//         )
+// }
