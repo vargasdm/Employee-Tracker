@@ -46,13 +46,11 @@ function mainMenu() {
             } else if (answers.options === 'Update an employee role') {
                 updateRole();
             } else {
-                return;
+                process.exit();
             }
         })
 };
 
-
-// sql queries
 function getDepartments() {
     db.query('SELECT * FROM department', function (err, results) {
         console.table(results);
@@ -63,7 +61,9 @@ function getDepartments() {
 };
 
 function getRoles() {
-    db.query('SELECT * FROM role', function (err, results) {
+    console.log("this is a console log")
+    db.query('SELECT role.id, role.title, role.salary, department.name AS department FROM role JOIN department ON role.department_id = department.id ', function (err, results) {
+        console.log(results)
         console.table(results);
         mainMenu();
     }
@@ -71,7 +71,7 @@ function getRoles() {
 };
 
 function getEmployees() {
-    db.query('SELECT * FROM employee', function (err, results) {
+    db.query('SELECT e1.id, e1.first_name, e1.last_name, role.title, role.salary, department.name AS department, CONCAT(e2.first_name, " ", e2.last_name) AS manager FROM employee e1 JOIN role ON e1.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee e2 ON e1.manager_id = e2.id', function (err, results) {
         console.table(results);
         mainMenu();
     }
@@ -89,7 +89,6 @@ function addDepartment() {
         ])
         .then((answers) => {
             let newDepartment = answers;
-            console.log(newDepartment);
             const { department } = newDepartment;
             db.query('INSERT INTO department (name) VALUES (?)', department, function (err, results) {
                 console.table(results);
@@ -139,7 +138,7 @@ function addRole() {
                         salary: eval(salary),
                         department_id: departmentId
                     }, function (err, results) {
-                        console.log(err)
+                        console.log(err);
                         console.table(results);
                         console.log("A new role was added to the database.");
                         mainMenu();
@@ -188,7 +187,6 @@ function addEmployee() {
                 ])
                 .then((answers) => {
                     let newEmployee = answers;
-                    console.log(newEmployee)
                     for (let i = 0; i < roleList.length; i++) {
                         if (roleList[i].value === newEmployee.employeeRole) {
                             // these are now value instead of id because when I mapped through I change the id property to value
@@ -196,7 +194,6 @@ function addEmployee() {
 
                         }
                     }
-                    console.log(roleId);
 
                     for (let i = 0; i < employeeList.length; i++) {
                         if (employeeList[i].value === newEmployee.employeeManager) {
@@ -204,7 +201,6 @@ function addEmployee() {
                             managerId = employeeList[i].value;
                         }
                     }
-                    console.log(managerId);
 
                     const { firstName, lastName } = newEmployee;
                     db.query('INSERT INTO employee SET ?',
@@ -230,18 +226,15 @@ function updateRole() {
         roleList = results.map((role) => {
             return { name: role.title, value: role.id };
         })
-        console.log(roleList)
 
         db.query('SELECT id, first_name, last_name FROM employee', function (err, results) {
             employeeList = results.map((employee) => {
                 return { name: employee.first_name + " " + employee.last_name, value: employee.id };
             })
-            console.log(employeeList)
 
             inquirer
                 .prompt([
                     {
-
                         type: 'list',
                         message: 'Select and employee to update',
                         name: 'updateEmployee',
@@ -256,24 +249,20 @@ function updateRole() {
                 ])
                 .then((answers) => {
                     let updatedEmployee = answers;
-                    console.log(updatedEmployee)
-                    
+
                     for (let i = 0; i < employeeList.length; i++) {
-                        if (employeeList[i].name === updatedEmployee.updateEmployee) {
+                        if (employeeList[i].value === updatedEmployee.updateEmployee) {
                             // these are now value instead of id because when I mapped through I change the id property to value
                             updatedEmployeeId = employeeList[i].value;
-                            console.log(employeeList[i].value)
                         }
                     }
-                    console.log(updatedEmployeeId);
 
                     for (let i = 0; i < roleList.length; i++) {
-                        if (roleList[i].name === updatedEmployee.newEmployeeRole) {
+                        if (roleList[i].value === updatedEmployee.newEmployeeRole) {
                             // these are now value instead of id because when I mapped through I change the id property to value
                             roleId = roleList[i].value;
                         }
                     }
-                    console.log("roleId is: " + roleId);
 
                     db.query('UPDATE employee SET role_id = ? WHERE id = ?',
                         [
