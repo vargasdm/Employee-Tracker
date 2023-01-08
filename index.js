@@ -149,68 +149,69 @@ function addRole() {
 }
 
 function addEmployee() {
-    db.query('SELECT * FROM role', function (err, results) {
+    db.query('SELECT id, title FROM role', function (err, results) {
         roleList = results;
+        console.log(roleList);
 
-        db.query('SELECT * FROM employee', function (err, results) {
+        db.query('SELECT first_name, last_name FROM employee', function (err, results) {
             employeeList = results;
-            console.log(employeeList);
-            employeeList = employeeList.push('None');
-            console.log(employeeList);
+            // console.log(employeeList);
+            // employeeList = employeeList.push('None');
+            // console.log(employeeList)
 
-            // inquirers
-            //     .prompt([
-            //         {
-            //             type: 'input',
-            //             message: 'What is the first name of this employee?',
-            //             name: 'firstName',
-            //         },
-            //         {
-            //             type: 'input',
-            //             message: 'What is the last name of this employee?',
-            //             name: 'lastName',
-            //         },
-            //         {
-            //             type: 'list',
-            //             message: 'What role does this employee hold?',
-            //             name: 'employeeRole',
-            //             choices: roleList,
-            //         },
-            //         {
-            //             type: 'list',
-            //             message: 'Who is the manager of this employee?',
-            //             name: 'employeeManager',
-            //             choices: employeeList
-            //         }
-            //     ])
-            //     .then((answers) => {
-            //         let newEmployee = answers;
-            //         for (let i = 0; i < roleList.length; i++) {
-            //             if (roleList[i].title === newEmployee.employeeRole) {
-            //                 roleId = roleList[i].id;
-            //             }
-            //         }
+            inquirer
+                .prompt([
+                    {
+                        type: 'input',
+                        message: 'What is the first name of this employee?',
+                        name: 'firstName',
+                    },
+                    {
+                        type: 'input',
+                        message: 'What is the last name of this employee?',
+                        name: 'lastName',
+                    },
+                    {
+                        type: 'list',
+                        message: 'What role does this employee hold?',
+                        name: 'employeeRole',
+                        choices: roleList,
+                    },
+                    {
+                        type: 'list',
+                        message: 'Who is the manager of this employee?',
+                        name: 'employeeManager',
+                        choices: employeeList.last_name
+                    }
+                ])
+                .then((answers) => {
+                    let newEmployee = answers;
+                    for (let i = 0; i < roleList.length; i++) {
+                        if (roleList[i].title === newEmployee.employeeRole) {
+                            roleId = roleList[i].id;
+                        }
+                    }
 
-            //         for (let i = 0; i < roleemployeeListList.length; i++) {
-            //             if (employeeList[i].id === newEmployee.employeeManager) {
-            //                 managerId = employeeList[i].id;
-            //             }
-            //         }
+                    for (let i = 0; i < roleemployeeListList.length; i++) {
+                        if (employeeList[i].id === newEmployee.employeeManager) {
+                            managerId = employeeList[i].id;
+                        }
+                    }
 
-            //         const { firstName, lastName } = newEmployee;
-            //         db.query('INSERT INTO employee SET ?',
-            //             {
-            //                 first_name: firstName,
-            //                 last_name: lastName,
-            //                 role_id: roleId,
-            //                 manager_id: managerId
-            //             }, function (err, results) {
-            //                 console.log(err)
-            //                 console.table(results);
-            //                 mainMenu();
-            //             }
-            //         )
-            //     })
+                    const { firstName, lastName } = newEmployee;
+                    db.query('INSERT INTO employee SET ?',
+                        {
+                            first_name: firstName,
+                            last_name: lastName,
+                            role_id: roleId,
+                            manager_id: managerId
+                        }, function (err, results) {
+                            console.log(err)
+                            console.table(results);
+                            mainMenu();
+                        }
+                    )
+                })
         })
     })
 }
