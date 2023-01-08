@@ -5,6 +5,7 @@ const db = require("./config/connection.js");
 let departmentId;
 let roleId;
 let managerId;
+let updatedEmployeeId;
 let departmentList = [];
 let roleList = [];
 let employeeList = [];
@@ -25,7 +26,7 @@ function mainMenu() {
                     'Add a department',
                     'Add a role',
                     'Add an employee',
-                    'Update and employee role',
+                    'Update an employee role',
                     'Quit'],
             }
         ])
@@ -42,15 +43,14 @@ function mainMenu() {
                 addRole();
             } else if (answers.options === 'Add an employee') {
                 addEmployee();
-            } else if (answers.options === 'Update and employee role') {
-                // internPrompts();
+            } else if (answers.options === 'Update an employee role') {
+                updateRole();
             } else {
                 return;
             }
         })
 };
 
-mainMenu();
 
 // sql queries
 function getDepartments() {
@@ -93,6 +93,7 @@ function addDepartment() {
             const { department } = newDepartment;
             db.query('INSERT INTO department (name) VALUES (?)', department, function (err, results) {
                 console.table(results);
+                console.log("A new department was added to the database.");
                 mainMenu();
             }
             )
@@ -140,6 +141,7 @@ function addRole() {
                     }, function (err, results) {
                         console.log(err)
                         console.table(results);
+                        console.log("A new role was added to the database.");
                         mainMenu();
                     }
                 )
@@ -152,14 +154,12 @@ function addEmployee() {
         roleList = results.map((role) => {
             return { name: role.title, value: role.id };
         })
-        console.log(roleList);
 
         db.query('SELECT id, first_name, last_name  FROM employee', function (err, results) {
             employeeList = results.map((employee) => {
                 return { name: employee.first_name + " " + employee.last_name, value: employee.id };
             })
-            console.log(employeeList);
-            employeeList = employeeList.push('NONE');
+            employeeList.push({ name: 'NONE', value: null });
 
             inquirer
                 .prompt([
@@ -207,19 +207,85 @@ function addEmployee() {
                     console.log(managerId);
 
                     const { firstName, lastName } = newEmployee;
-                    // db.query('INSERT INTO employee SET ?',
-                    //     {
-                    //         first_name: firstName,
-                    //         last_name: lastName,
-                    //         role_id: roleId,
-                    //         manager_id: managerId
-                    //     }, function (err, results) {
-                    //         console.log(err)
-                    //         console.table(results);
-                    //         mainMenu();
-                    //     }
-                    // )
+                    db.query('INSERT INTO employee SET ?',
+                        {
+                            first_name: firstName,
+                            last_name: lastName,
+                            role_id: roleId,
+                            manager_id: managerId
+                        }, function (err, results) {
+                            console.log(err)
+                            console.table(results);
+                            console.log("A new employee was added to the database.");
+                            mainMenu();
+                        }
+                    )
                 })
         })
     })
 };
+
+function updateRole() {
+    db.query('SELECT id, title FROM role', function (err, results) {
+        roleList = results.map((role) => {
+            return { name: role.title, value: role.id };
+        })
+
+        db.query('SELECT id, first_name, last_name FROM employee', function (err, results) {
+            employeeList = results.map((employee) => {
+                return { name: employee.first_name + " " + employee.last_name, value: employee.id };
+            })
+
+            inquirer
+                .prompt([
+                    {
+
+                        type: 'list',
+                        message: 'Select and employee to update',
+                        name: 'updateEmployee',
+                        choices: employeeList
+                    },
+                    {
+                        type: 'list',
+                        message: `Select the employee's new role`,
+                        name: 'newEmployeeRole',
+                        choices: roleList,
+                    }
+                ])
+                .then((answers) => {
+                    let updatedEmployee = answers;
+                    console.log(updatedEmployee)
+                    
+                    for (let i = 0; i < employeeList.length; i++) {
+                        if (employeeList[i].name === updatedEmployee.updateEmployee) {
+                            // these are now value instead of id because when I mapped through I change the id property to value
+                            updatedEmployeeId = employeeList[i].value;
+                        }
+                    }
+                    console.log(updatedEmployeeId);
+
+                    for (let i = 0; i < roleList.length; i++) {
+                        if (roleList[i].name === updatedEmployee.newEmployeeRole) {
+                            // these are now value instead of id because when I mapped through I change the id property to value
+                            roleId = roleList[i].value;
+                        }
+                    }
+                    console.log(roleId);
+
+                    db.query('UPDATE employee SET role_id = ? WHERE id = ?',
+                        [
+                            roleId,
+                            updatedEmployeeId
+                        ], function (err, results) {
+                            console.log(err)
+                            console.table(results);
+                            console.log(`An employee's role has been updated in the database.`);
+                            mainMenu();
+                        }
+                    )
+                })
+        })
+    })
+}
+
+mainMenu();
