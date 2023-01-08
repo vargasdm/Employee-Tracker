@@ -1,6 +1,5 @@
 const mysql = require("mysql2");
 const inquirer = require("inquirer");
-const fs = require("fs");
 const cTable = require("console.table");
 const db = require("./config/connection.js");
 let departmentId;
@@ -10,7 +9,7 @@ let departmentList = [];
 let roleList = [];
 let employeeList = [];
 
-console.log('Welcome to your Employee Manager!!')
+console.log('Welcome to your Employee Manager!!');
 
 function mainMenu() {
     inquirer
@@ -61,7 +60,7 @@ function getDepartments() {
         mainMenu();
     }
     )
-}
+};
 
 function getRoles() {
     db.query('SELECT * FROM role', function (err, results) {
@@ -69,7 +68,7 @@ function getRoles() {
         mainMenu();
     }
     )
-}
+};
 
 function getEmployees() {
     db.query('SELECT * FROM employee', function (err, results) {
@@ -77,7 +76,7 @@ function getEmployees() {
         mainMenu();
     }
     )
-}
+};
 
 function addDepartment() {
     inquirer
@@ -99,7 +98,7 @@ function addDepartment() {
             )
         }
         )
-}
+};
 
 function addRole() {
     db.query('SELECT * FROM department', function (err, results) {
@@ -146,18 +145,21 @@ function addRole() {
                 )
             })
     })
-}
+};
 
 function addEmployee() {
     db.query('SELECT id, title FROM role', function (err, results) {
-        roleList = results;
+        roleList = results.map((role) => {
+            return { name: role.title, value: role.id };
+        })
         console.log(roleList);
 
-        db.query('SELECT first_name, last_name FROM employee', function (err, results) {
-            employeeList = results;
-            // console.log(employeeList);
-            // employeeList = employeeList.push('None');
-            // console.log(employeeList)
+        db.query('SELECT id, first_name, last_name  FROM employee', function (err, results) {
+            employeeList = results.map((employee) => {
+                return { name: employee.first_name + " " + employee.last_name, value: employee.id };
+            })
+            console.log(employeeList);
+            employeeList = employeeList.push('NONE');
 
             inquirer
                 .prompt([
@@ -179,39 +181,45 @@ function addEmployee() {
                     },
                     {
                         type: 'list',
-                        message: 'Who is the manager of this employee?',
+                        message: 'Who manages this employee?',
                         name: 'employeeManager',
-                        choices: employeeList.last_name
+                        choices: employeeList
                     }
                 ])
                 .then((answers) => {
                     let newEmployee = answers;
+                    console.log(newEmployee)
                     for (let i = 0; i < roleList.length; i++) {
-                        if (roleList[i].title === newEmployee.employeeRole) {
-                            roleId = roleList[i].id;
-                        }
-                    }
+                        if (roleList[i].value === newEmployee.employeeRole) {
+                            // these are now value instead of id because when I mapped through I change the id property to value
+                            roleId = roleList[i].value;
 
-                    for (let i = 0; i < roleemployeeListList.length; i++) {
-                        if (employeeList[i].id === newEmployee.employeeManager) {
-                            managerId = employeeList[i].id;
                         }
                     }
+                    console.log(roleId);
+
+                    for (let i = 0; i < employeeList.length; i++) {
+                        if (employeeList[i].value === newEmployee.employeeManager) {
+                            // these are now value instead of id because when I mapped through I change the id property to value
+                            managerId = employeeList[i].value;
+                        }
+                    }
+                    console.log(managerId);
 
                     const { firstName, lastName } = newEmployee;
-                    db.query('INSERT INTO employee SET ?',
-                        {
-                            first_name: firstName,
-                            last_name: lastName,
-                            role_id: roleId,
-                            manager_id: managerId
-                        }, function (err, results) {
-                            console.log(err)
-                            console.table(results);
-                            mainMenu();
-                        }
-                    )
+                    // db.query('INSERT INTO employee SET ?',
+                    //     {
+                    //         first_name: firstName,
+                    //         last_name: lastName,
+                    //         role_id: roleId,
+                    //         manager_id: managerId
+                    //     }, function (err, results) {
+                    //         console.log(err)
+                    //         console.table(results);
+                    //         mainMenu();
+                    //     }
+                    // )
                 })
         })
     })
-}
+};
