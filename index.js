@@ -48,19 +48,19 @@ function mainMenu() {
 
 mainMenu();
 
-function determineDepartmentId() {
-    let departmentList = [];
-    db.query('SELECT * FROM department', function (err, results) {
-        departmentList = results;
-        let departmentId;
-                for (let i = 0; i < departmentList.length; i++) {
-                    if (departmentList[i].name === newRole.roleDepartment) {
-                        departmentId = answers.roleDepartment;
-                        console.log(departmentId);
-                    }
-                }
-    })
-}
+// function determineDepartmentId() {
+//     let departmentList = [];
+//     db.query('SELECT * FROM department', function (err, results) {
+//         departmentList = results;
+//         let departmentId;
+//                 for (let i = 0; i < departmentList.length; i++) {
+//                     if (departmentList[i].name === newRole.roleDepartment) {
+//                         departmentId = departmentList[i].id;
+//                         console.log(departmentId);
+//                     }
+//                 }
+//     })
+// }
 
 // sql queries
 function getDepartments() {
@@ -136,24 +136,27 @@ function addRole() {
             ])
             .then((answers) => {
                 let newRole = answers;
-                // let departmentId;
-                // for (let i = 0; i < departmentList.length; i++) {
-                //     if (departmentList[i].name === newRole.roleDepartment) {
-                //         departmentId = answers.roleDepartment;
-                //         console.log(departmentId);
-                //     }
-                // }
-                determineDepartmentId();
+                let departmentId;
+                for (let i = 0; i < departmentList.length; i++) {
+                    for (let i = 0; i < departmentList.length; i++) {
+                        if (departmentList[i].name === newRole.roleDepartment) {
+                            departmentId = departmentList[i].id;
+                        }
+                    }
 
-                console.log(newRole);
-                const { roleName, salary } = newRole;
-                db.query('INSERT INTO role (title, salary, department_id) SET (?)', (roleName, salary, departmentId), function (err, results) {
-                    console.table(results);
-                    mainMenu();
+                    const { roleName, salary } = newRole;
+                    db.query('INSERT INTO role SET ?',
+                     { title: roleName, 
+                        salary: eval(salary), 
+                        department_id: departmentId 
+                    }, function (err, results) {
+                        console.log(err)
+                        console.table(results);
+                        mainMenu();
+                    }
+                    )
                 }
-                )
-            }
-            )
+            })
     })
 
 }
