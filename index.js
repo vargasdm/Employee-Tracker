@@ -3,7 +3,7 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require("console.table");
 const db = require("./config/connection.js");
-let departmentList = "";
+let departmentList = [];
 
 console.log('Welcome to your Employee Manager!!')
 
@@ -35,7 +35,7 @@ function mainMenu() {
             } else if (answers.options === 'Add a department') {
                 addDepartment();
             } else if (answers.options === 'Add a role') {
-                // internPrompts();
+                addRole();
             } else if (answers.options === 'Add an employee') {
                 // internPrompts();
             } else if (answers.options === 'Update and employee role') {
@@ -52,6 +52,7 @@ mainMenu();
 function getDepartments() {
     db.query('SELECT * FROM department', function (err, results) {
         console.table(results);
+        departmentList = results;
         mainMenu();
     }
     )
@@ -96,36 +97,43 @@ function addDepartment() {
 }
 
 function addRole() {
-    inquirer
-        .prompt([
-            {
-                type: 'input',
-                message: 'What is the name of the role?',
-                name: 'roleName',
-            },
-            {
-                type: 'input',
-                message: 'What is the salary of this role?',
-                name: 'salary',
-            },
-            {
-                type: 'list',
-                message: 'What department does this role belong to?',
-                name: 'roleDepartment',
-                choices: [],
-            }
-        ])
-        .then((answers) => {
-            let newRole = answers;
-            console.log(newRole);
-            const { roleName, salary, roelDepartment } = newRole;
-            db.query('INSERT INTO role (title, salary, department_id) VALUES (?)', [roleName, salary, roelDepartment], function (err, results) {
-                console.table(results);
-                mainMenu();
+    db.query('SELECT * FROM department', function (err, results) {
+        .then((results) => {
+        let departmentList = results;
+        console.log(departmentList);
+        
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the name of the role?',
+                    name: 'roleName',
+                },
+                {
+                    type: 'input',
+                    message: 'What is the salary of this role?',
+                    name: 'salary',
+                },
+                {
+                    type: 'list',
+                    message: 'What department does this role belong to?',
+                    name: 'roleDepartment',
+                    choices: departmentList,
+                }
+            ])
+            .then((answers) => {
+                let newRole = answers;
+                console.log(newRole);
+                const { roleName, salary, roleDepartment } = newRole;
+                db.query('INSERT INTO role (title, salary, department_id) VALUES (?)', [roleName, salary, roleDepartment], function (err, results) {
+                    console.table(results);
+                    mainMenu();
+                }
+                )
             }
             )
-        }
-        )
+    })
+    })
 }
 
 // function addEmployee() {
