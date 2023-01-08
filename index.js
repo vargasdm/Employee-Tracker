@@ -230,11 +230,13 @@ function updateRole() {
         roleList = results.map((role) => {
             return { name: role.title, value: role.id };
         })
+        console.log(roleList)
 
         db.query('SELECT id, first_name, last_name FROM employee', function (err, results) {
             employeeList = results.map((employee) => {
                 return { name: employee.first_name + " " + employee.last_name, value: employee.id };
             })
+            console.log(employeeList)
 
             inquirer
                 .prompt([
@@ -260,6 +262,7 @@ function updateRole() {
                         if (employeeList[i].name === updatedEmployee.updateEmployee) {
                             // these are now value instead of id because when I mapped through I change the id property to value
                             updatedEmployeeId = employeeList[i].value;
+                            console.log(employeeList[i].value)
                         }
                     }
                     console.log(updatedEmployeeId);
@@ -270,7 +273,7 @@ function updateRole() {
                             roleId = roleList[i].value;
                         }
                     }
-                    console.log(roleId);
+                    console.log("roleId is: " + roleId);
 
                     db.query('UPDATE employee SET role_id = ? WHERE id = ?',
                         [
