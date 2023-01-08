@@ -52,7 +52,13 @@ function determineDepartmentId() {
     let departmentList = [];
     db.query('SELECT * FROM department', function (err, results) {
         departmentList = results;
-
+        let departmentId;
+                for (let i = 0; i < departmentList.length; i++) {
+                    if (departmentList[i].name === newRole.roleDepartment) {
+                        departmentId = answers.roleDepartment;
+                        console.log(departmentId);
+                    }
+                }
     })
 }
 
@@ -130,14 +136,15 @@ function addRole() {
             ])
             .then((answers) => {
                 let newRole = answers;
-                let departmentId;
-                for (let i = 0; i < departmentList.length; i++) {
-                    if (departmentList[i].name === newRole.roleDepartment) {
-                        departmentId = answers.roleDepartment;
-                        console.log(departmentId);
-                    }
-                }
-                console.log(departmentId);
+                // let departmentId;
+                // for (let i = 0; i < departmentList.length; i++) {
+                //     if (departmentList[i].name === newRole.roleDepartment) {
+                //         departmentId = answers.roleDepartment;
+                //         console.log(departmentId);
+                //     }
+                // }
+                determineDepartmentId();
+
                 console.log(newRole);
                 const { roleName, salary } = newRole;
                 db.query('INSERT INTO role (title, salary, department_id) SET (?)', (roleName, salary, departmentId), function (err, results) {
