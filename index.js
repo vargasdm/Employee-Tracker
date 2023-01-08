@@ -3,7 +3,7 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require("console.table");
 const db = require("./config/connection.js");
-let departmentList = [];
+
 
 console.log('Welcome to your Employee Manager!!')
 
@@ -97,9 +97,9 @@ function addDepartment() {
 }
 
 function addRole() {
+    let departmentList = [];
     db.query('SELECT * FROM department', function (err, results) {
-        .then((results) => {
-        let departmentList = results;
+        departmentList = results;
         console.log(departmentList);
         
         inquirer
@@ -133,7 +133,7 @@ function addRole() {
             }
             )
     })
-    })
+
 }
 
 // function addEmployee() {
