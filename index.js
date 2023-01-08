@@ -3,7 +3,8 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const cTable = require("console.table");
 const db = require("./config/connection.js");
-
+let departmentId;
+let departmentList = [];
 
 console.log('Welcome to your Employee Manager!!')
 
@@ -111,7 +112,6 @@ function addDepartment() {
 }
 
 function addRole() {
-    let departmentList = [];
     db.query('SELECT * FROM department', function (err, results) {
         departmentList = results;
 
@@ -136,29 +136,26 @@ function addRole() {
             ])
             .then((answers) => {
                 let newRole = answers;
-                let departmentId;
                 for (let i = 0; i < departmentList.length; i++) {
-                    for (let i = 0; i < departmentList.length; i++) {
-                        if (departmentList[i].name === newRole.roleDepartment) {
-                            departmentId = departmentList[i].id;
-                        }
+                    if (departmentList[i].name === newRole.roleDepartment) {
+                        departmentId = departmentList[i].id;
                     }
+                }
 
-                    const { roleName, salary } = newRole;
-                    db.query('INSERT INTO role SET ?',
-                     { title: roleName, 
-                        salary: eval(salary), 
-                        department_id: departmentId 
+                const { roleName, salary } = newRole;
+                db.query('INSERT INTO role SET ?',
+                    {
+                        title: roleName,
+                        salary: eval(salary),
+                        department_id: departmentId
                     }, function (err, results) {
                         console.log(err)
                         console.table(results);
                         mainMenu();
                     }
-                    )
-                }
+                )
             })
     })
-
 }
 
 // function addEmployee() {
