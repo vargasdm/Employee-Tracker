@@ -61,9 +61,7 @@ function getDepartments() {
 };
 
 function getRoles() {
-    console.log("this is a console log")
     db.query('SELECT role.id, role.title, role.salary, department.name AS department FROM role JOIN department ON role.department_id = department.id ', function (err, results) {
-        console.log(results)
         console.table(results);
         mainMenu();
     }
