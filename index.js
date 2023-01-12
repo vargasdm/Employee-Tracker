@@ -52,6 +52,7 @@ function mainMenu() {
 };
 
 function getDepartments() {
+    // retreives info from department table in employee db
     db.query('SELECT * FROM department', function (err, results) {
         console.table(results);
         departmentList = results;
@@ -61,6 +62,7 @@ function getDepartments() {
 };
 
 function getRoles() {
+    // retreives info from department and role table in employee db, joins and displays it
     db.query('SELECT role.id, role.title, role.salary, department.name AS department FROM role JOIN department ON role.department_id = department.id ', function (err, results) {
         console.table(results);
         mainMenu();
@@ -69,6 +71,7 @@ function getRoles() {
 };
 
 function getEmployees() {
+    // retreives info from department, role and employee table from employee db, joins and displays it
     db.query('SELECT e1.id, e1.first_name, e1.last_name, role.title, role.salary, department.name AS department, CONCAT(e2.first_name, " ", e2.last_name) AS manager FROM employee e1 JOIN role ON e1.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee e2 ON e1.manager_id = e2.id', function (err, results) {
         console.table(results);
         mainMenu();
@@ -88,6 +91,7 @@ function addDepartment() {
         .then((answers) => {
             let newDepartment = answers;
             const { department } = newDepartment;
+            // adds a row in department table with user input
             db.query('INSERT INTO department (name) VALUES (?)', department, function (err, results) {
                 console.table(results);
                 console.log("A new department was added to the database.");
@@ -123,6 +127,7 @@ function addRole() {
             ])
             .then((answers) => {
                 let newRole = answers;
+                // loop to match primary key from department table and foreign key from role table
                 for (let i = 0; i < departmentList.length; i++) {
                     if (departmentList[i].name === newRole.roleDepartment) {
                         departmentId = departmentList[i].id;
@@ -130,6 +135,7 @@ function addRole() {
                 }
 
                 const { roleName, salary } = newRole;
+                // adds a row in role table with user input
                 db.query('INSERT INTO role SET ?',
                     {
                         title: roleName,
@@ -147,12 +153,16 @@ function addRole() {
 };
 
 function addEmployee() {
+    // retreives title info from role table
     db.query('SELECT id, title FROM role', function (err, results) {
+        // maps property names from user input so it can be used in inquirer prompt
         roleList = results.map((role) => {
             return { name: role.title, value: role.id };
         })
 
-        db.query('SELECT id, first_name, last_name  FROM employee', function (err, results) {
+        // retreives first and last name from employee table
+        db.query('SELECT id, first_name, last_name FROM employee', function (err, results) {
+            // maps property names from user input so it can be used in inquirer prompt
             employeeList = results.map((employee) => {
                 return { name: employee.first_name + " " + employee.last_name, value: employee.id };
             })
@@ -185,22 +195,21 @@ function addEmployee() {
                 ])
                 .then((answers) => {
                     let newEmployee = answers;
+                    // loop to match primary key from role table and foreign key from employee table
                     for (let i = 0; i < roleList.length; i++) {
                         if (roleList[i].value === newEmployee.employeeRole) {
-                            // these are now value instead of id because when I mapped through I change the id property to value
                             roleId = roleList[i].value;
-
                         }
                     }
-
+                    // loop to match primary key from employee table and foreign key from employee table
                     for (let i = 0; i < employeeList.length; i++) {
                         if (employeeList[i].value === newEmployee.employeeManager) {
-                            // these are now value instead of id because when I mapped through I change the id property to value
                             managerId = employeeList[i].value;
                         }
                     }
 
                     const { firstName, lastName } = newEmployee;
+                    // adds info into employee table
                     db.query('INSERT INTO employee SET ?',
                         {
                             first_name: firstName,
@@ -220,11 +229,13 @@ function addEmployee() {
 };
 
 function updateRole() {
+    // retreives title info from role table
     db.query('SELECT id, title FROM role', function (err, results) {
         roleList = results.map((role) => {
             return { name: role.title, value: role.id };
         })
 
+        // retreives first and last name from employee table
         db.query('SELECT id, first_name, last_name FROM employee', function (err, results) {
             employeeList = results.map((employee) => {
                 return { name: employee.first_name + " " + employee.last_name, value: employee.id };
@@ -248,20 +259,21 @@ function updateRole() {
                 .then((answers) => {
                     let updatedEmployee = answers;
 
+                    // loop to match primary key from employee table and foreign key from employee table
                     for (let i = 0; i < employeeList.length; i++) {
                         if (employeeList[i].value === updatedEmployee.updateEmployee) {
-                            // these are now value instead of id because when I mapped through I change the id property to value
                             updatedEmployeeId = employeeList[i].value;
                         }
                     }
-
+                    
+                    // loop to match primary key from role table and foreign key from employee table
                     for (let i = 0; i < roleList.length; i++) {
                         if (roleList[i].value === updatedEmployee.newEmployeeRole) {
-                            // these are now value instead of id because when I mapped through I change the id property to value
                             roleId = roleList[i].value;
                         }
                     }
 
+                    // updates employee role id with user input
                     db.query('UPDATE employee SET role_id = ? WHERE id = ?',
                         [
                             roleId,
