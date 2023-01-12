@@ -21,7 +21,7 @@ During this project I learned:
 
 ## Installation
 
-First, you will need to clone this repository to your local machine. The repository should already contain the package.json file as well as the package-lock.json file. This application requires you to have node.js version 16.18 and you can read how to install the correct version at https://coding-boot-camp.github.io/full-stack/nodejs/how-to-install-nodejs. This application also requires the thrid-party packages inquirer, console.table, mysql2, and dotenv. It can be installed by opening the index.js terminal and entering npm i. You will be able to check the package.jason file and find the dependencies. After the required packages are installed, the user can open the terminal in the index.js file, and enter node index.js.
+First, you will need to clone this repository to your local machine. The repository should already contain the package.json file as well as the package-lock.json file. This application requires you to have node.js version 16.18 and you can read how to install the correct version at https://coding-boot-camp.github.io/full-stack/nodejs/how-to-install-nodejs. This application also requires the thrid-party packages inquirer, console.table, mysql2, and dotenv. It can be installed by opening the index.js terminal and entering npm i. You will be able to check the package.jason file and find the dependencies. After the required packages are installed, the user can open the terminal in the index.js file, and enter node index.js. To access the sql database you will eed to add your log in credentials to the the .env file.
 
 To install the packages check these resources:
 - https://www.npmjs.com/package/inquirer
